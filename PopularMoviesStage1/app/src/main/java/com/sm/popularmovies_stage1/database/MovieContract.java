@@ -6,19 +6,19 @@ import android.provider.BaseColumns;
 public class MovieContract {
 
     interface MovieColumns {
-        String VOTE_COUNT ="vote_count" ;
-        String ID="id";
+        String ID="movies_id";
+        String VOTE_COUNT ="movies_vote_count";
         String VIDEO="movies_video";
         String VOTE_AVERAGE="movies_vote_average";
         String TITLE="movies_title";
         String POPULARITY="movies_popularity";
         String POSTER_PATH="movies_poster_path";
         String ORIGINAL_LANGUAGE="movies_original_language";
-        String ORIGINAL_TITLE="movies_origial_title";
+        String ORIGINAL_TITLE="movies_original_title";
         String BACKDROP_PATH="movies_backdrop_path";
         String ADULT="movies_adult";
         String OVERVIEW="movies_overview";
-        String RELEASE_DATE="movies_releasedate";
+        String RELEASE_DATE="movies_release_date";
     }
 
     // Used to access the content

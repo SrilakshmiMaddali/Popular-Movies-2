@@ -113,6 +113,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+        isFavorite = isFavoriteCheck();
         if(isFavorite) {
             mAddToFavorite.setText(getString(R.string.removefavoritebtn));
             mAddToFavorite.setOnClickListener(mRemoveFavoriteListener);
@@ -221,6 +222,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
             values.put(MovieContract.Movie.ADULT, mUserElectedMovie.getmAdult());
             values.put(MovieContract.Movie.POPULARITY, mUserElectedMovie.getmPopularity());
             values.put(MovieContract.Movie.OVERVIEW, mUserElectedMovie.getmOverview());
+            values.put(MovieContract.Movie.VIDEO, mUserElectedMovie.getmVideo());
+            values.put(MovieContract.Movie.VOTE_AVERAGE, mUserElectedMovie.getmVoteAverage());
+            values.put(MovieContract.Movie.VOTE_COUNT, mUserElectedMovie.getmVoteCount());
+            values.put(MovieContract.Movie.TITLE, mUserElectedMovie.getmTitle());
+            values.put(MovieContract.Movie.POSTER_PATH, mUserElectedMovie.getmPosterPath());
+            values.put(MovieContract.Movie.ORIGINAL_LANGUAGE, mUserElectedMovie.getmOriginalLanguage());
+            values.put(MovieContract.Movie.BACKDROP_PATH, mUserElectedMovie.getmBackdropPath());
+            values.put(MovieContract.Movie.RELEASE_DATE, mUserElectedMovie.getmReleaseDate());
             Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
             Log.d(TAG, "record id returned is " + returned.toString());
         }

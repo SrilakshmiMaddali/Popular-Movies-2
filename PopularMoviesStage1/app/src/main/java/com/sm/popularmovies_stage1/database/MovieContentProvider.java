@@ -81,7 +81,7 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             case MOVIE_ID:
                 String id = MovieContract.Movie.getMovieId(uri);
-                String selectionCriteria = BaseColumns._ID + "=" + id + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
+                String selectionCriteria = MovieContract.Movie.ID + "=" + id + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
                 return db.delete(MovieDatabaseHandler.Tables.MOVIES, selectionCriteria, selectionArgs);
             default:
                 throw new IllegalArgumentException("Unknown URI : " + uri);
@@ -104,7 +104,7 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             case MOVIE_ID:
                 String id = MovieContract.Movie.getMovieId(uri);
-                selectionCriteria = BaseColumns._ID + "=" + id
+                selectionCriteria = MovieContract.Movie.ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
                 break;
             default:
@@ -131,7 +131,7 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             case MOVIE_ID:
                 String id  = MovieContract.Movie.getMovieId(uri);
-                queryBuilder.appendWhere(BaseColumns._ID + "="+ id);
+                queryBuilder.appendWhere(MovieContract.Movie.ID + "="+ id);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI : "+ uri);
@@ -139,6 +139,11 @@ public class MovieContentProvider extends ContentProvider {
 
         // Projection : Columns to return
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                
+            }
+        }
         return cursor;
     }
 }

@@ -10,4 +10,9 @@
         android:title="Top Rated"
         android:visible="true">
     </item>
+
+    <item
+        android:id="@+id/fv_movies"
+        android:title="Favorite">
+    </item>
 </menu>

@@ -37,6 +37,7 @@ import com.sm.popularmovies_stage1.model.VideoDataDto;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +53,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TrailerAdapter mTrailerAdapter;
     Button mAddToFavorite;
     ListView mTrailerList;
+    ArrayList<String> reviewsList;
     Context mContext;
     Movies mUserElectedMovie;
     boolean isFavorite = false;
@@ -222,7 +224,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
             values.put(MovieContract.Movie.ID, mUserElectedMovie.getmId());
             values.put(MovieContract.Movie.ORIGINAL_TITLE, mUserElectedMovie.getmOriginalTitle());
-            values.put(MovieContract.Movie.ADULT, mUserElectedMovie.getmAdult());
             values.put(MovieContract.Movie.POPULARITY, mUserElectedMovie.getmPopularity());
             values.put(MovieContract.Movie.OVERVIEW, mUserElectedMovie.getmOverview());
             values.put(MovieContract.Movie.VIDEO, mUserElectedMovie.getmVideo());

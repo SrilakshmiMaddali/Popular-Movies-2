@@ -22,7 +22,7 @@ public class MovieDatabaseHandler extends SQLiteOpenHelper {
     //        String OVERVIEW;
     //        String RELEASE_DATE;
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
     private ContentResolver contentResolver;
     interface Tables{
         String MOVIES = "movies";
@@ -41,7 +41,6 @@ public class MovieDatabaseHandler extends SQLiteOpenHelper {
                 +MovieContract.MovieColumns.ORIGINAL_LANGUAGE+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.ORIGINAL_TITLE+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.BACKDROP_PATH+" TEXT NOT NULL,"
-                +MovieContract.MovieColumns.ADULT+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.OVERVIEW+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.VOTE_COUNT+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.RELEASE_DATE+" TEXT NOT NULL)");

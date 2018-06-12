@@ -1,7 +1,11 @@
 package com.sm.popularmovies_stage1.ui;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,12 +20,14 @@ import android.widget.Toast;
 
 import com.sm.popularmovies_stage1.BuildConfig;
 import com.sm.popularmovies_stage1.R;
+import com.sm.popularmovies_stage1.database.MovieContract;
 import com.sm.popularmovies_stage1.model.CustomAdapter;
 import com.sm.popularmovies_stage1.model.MoviedbService;
 import com.sm.popularmovies_stage1.model.Movies;
 import com.sm.popularmovies_stage1.model.PopularMoviesDto;
 import com.sm.popularmovies_stage1.model.RetrofitClientInstance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -35,15 +41,18 @@ public class MainActivity extends AppCompatActivity {
     CustomAdapter mCustomAdapter;
     MenuItem top;
     MenuItem pop;
+    MenuItem fav;
     private static final String API_KEY = BuildConfig.API_KEY;
     private static final String TAG = "MainActivity";
     List<Movies> mMoviesList;
+    ContentResolver mContentResolver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridview = findViewById(R.id.gridview);
         mContext = this;
+        mContentResolver = MainActivity.this.getContentResolver();
         getMovieList(getPopularMoviesCall());
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.movietypefilter, menu);
         top = menu.findItem(R.id.top_movies);
         pop = menu.findItem(R.id.popular_movies);
+        fav = menu.findItem(R.id.fv_movies);
         return true;
     }
 
@@ -82,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
                 top.setVisible(false);
                 pop.setVisible(true);
                 setTitle(R.string.top_movies);
+                break;
+            case R.id.fv_movies:
+                createFavoriteList();
                 break;
             default:
                 break;
@@ -123,6 +136,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void createFavoriteList() {
+        String[] projection = {MovieContract.Movie.ID,
+                MovieContract.MovieColumns.VIDEO,
+                MovieContract.MovieColumns.VOTE_AVERAGE,
+                MovieContract.MovieColumns.TITLE,
+                MovieContract.MovieColumns.POPULARITY,
+                MovieContract.MovieColumns.POSTER_PATH,
+                MovieContract.MovieColumns.ORIGINAL_LANGUAGE,
+                MovieContract.MovieColumns.ORIGINAL_TITLE,
+                MovieContract.MovieColumns.BACKDROP_PATH,
+                MovieContract.MovieColumns.OVERVIEW,
+                MovieContract.MovieColumns.VOTE_COUNT,
+                MovieContract.MovieColumns.RELEASE_DATE
+        };
+
+        List<Movies> entries = new ArrayList<Movies>();
+
+        Cursor mCursor = mContentResolver.query(MovieContract.URI_TABLE, projection, null, null, null);
+
+        if(mCursor != null){
+            if(mCursor.moveToFirst()){
+                do{
+                    int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.Movie.ID));
+                    String video = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VIDEO));
+                    String vote_average = mCursor.getString(mCursor.getColumnIndex( MovieContract.MovieColumns.VOTE_AVERAGE));
+                    String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.TITLE));
+                    String popularity = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POPULARITY));
+                    String poster_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POSTER_PATH));
+                    String origin_language = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_LANGUAGE));
+                    String origin_title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_TITLE));
+                    String backdrop_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.BACKDROP_PATH));
+                    String overview = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.OVERVIEW));
+                    String vote_count = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VOTE_COUNT));
+                    String release_date = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.RELEASE_DATE));
+                    Movies movieEntry = new Movies(Integer.parseInt(vote_count),Integer.toString(id),video,vote_average,title,popularity, poster_path, origin_language, origin_title, backdrop_path, false, overview, release_date);
+                    entries.add(movieEntry);
+                }while(mCursor.moveToNext());
+            }
+        }
+        generateDataList(entries);
+    }
     private void generateDataList(List<Movies> moviesList) {
         mCustomAdapter = new CustomAdapter(mContext, moviesList);
         gridview.setAdapter(mCustomAdapter);

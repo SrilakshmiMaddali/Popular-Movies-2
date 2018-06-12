@@ -113,6 +113,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
+        updateFavoriteUI();
+    }
+    private void closeOnError() {
+        finish();
+        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateFavoriteUI() {
         isFavorite = isFavoriteCheck();
         if(isFavorite) {
             mAddToFavorite.setText(getString(R.string.removefavoritebtn));
@@ -122,11 +130,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mAddToFavorite.setOnClickListener(mAddToFavoriteListener);
         }
     }
-    private void closeOnError() {
-        finish();
-        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
-    }
-
     // Prepares poster url.
     private String getPath(String posterPath) {
         String url = "http://image.tmdb.org/t/p/" + "w500/" + posterPath;
@@ -231,6 +234,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
             values.put(MovieContract.Movie.BACKDROP_PATH, mUserElectedMovie.getmBackdropPath());
             values.put(MovieContract.Movie.RELEASE_DATE, mUserElectedMovie.getmReleaseDate());
             Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+            updateFavoriteUI();
             Log.d(TAG, "record id returned is " + returned.toString());
         }
     };
@@ -241,16 +245,24 @@ public class MovieDetailsActivity extends AppCompatActivity {
         public void onClick(View v) {
             Uri uri = MovieContract.Movie.buildMovieUri(mUserElectedMovie.getmId());
             mContentResolver.delete(uri, null, null);
-
+            updateFavoriteUI();
         }
     };
 
     private boolean isFavoriteCheck() {
         // Retrieve movies records
-        String URL = "content://com.sm.popularmovies_stage1.database.provider";
 
-        Uri students = Uri.parse(URL);
-        Cursor c = managedQuery(students, null, null, null, "name");
+        Uri moviesuri = MovieContract.URI_TABLE;
+        Cursor cursor = managedQuery(moviesuri, null, null, null, MovieContract.Movie.ID);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int id = cursor.getInt(cursor.getColumnIndex(MovieContract.Movie.ID));
+                String title = cursor.getString(cursor.getColumnIndex(MovieContract.Movie.TITLE));
+                if ( title.equals(mUserElectedMovie.getmTitle())) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

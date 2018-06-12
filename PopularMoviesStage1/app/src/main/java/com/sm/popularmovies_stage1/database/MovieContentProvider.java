@@ -139,11 +139,6 @@ public class MovieContentProvider extends ContentProvider {
 
         // Projection : Columns to return
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                
-            }
-        }
         return cursor;
     }
 }

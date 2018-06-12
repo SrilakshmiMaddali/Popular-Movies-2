@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +21,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -29,7 +30,6 @@ import com.sm.popularmovies_stage1.R;
 import com.sm.popularmovies_stage1.database.MovieContract;
 import com.sm.popularmovies_stage1.model.MoviedbService;
 import com.sm.popularmovies_stage1.model.Movies;
-import com.sm.popularmovies_stage1.model.PopularMoviesDto;
 import com.sm.popularmovies_stage1.model.RetrofitClientInstance;
 import com.sm.popularmovies_stage1.model.Review;
 import com.sm.popularmovies_stage1.model.ReviewAdapter;
@@ -40,7 +40,6 @@ import com.sm.popularmovies_stage1.model.VideoDataDto;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,10 +54,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
     List<TrailerVideo> mTrailerVideoList;
     List<Review> mReviewsList;
     TrailerAdapter mTrailerAdapter;
-    ReviewAdapter mReviewAdapter;
+    RecyclerView.Adapter mReviewAdapter;
     Button mAddToFavorite;
     ListView mTrailerList;
-    ListView mReviewsListView;
+    RecyclerView mReviewsRecyclerView;
+    private RecyclerView.LayoutManager layoutManager;
     Context mContext;
     Movies mUserElectedMovie;
     boolean isFavorite = false;
@@ -77,9 +77,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
         moviePosterImage = (ImageView) findViewById(R.id.movie_poster);
         movieTitle = (TextView) findViewById(R.id.title);
         mTrailerList = (ListView) findViewById(R.id.trailer_list);
-        mTrailerList.setNestedScrollingEnabled(true);
-        mReviewsListView = (ListView) findViewById(R.id.review_list);
-        mReviewsListView.setNestedScrollingEnabled(true);
+        mReviewsRecyclerView = (RecyclerView) findViewById(R.id.review_list);
+        mReviewsRecyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        mReviewsRecyclerView.setLayoutManager(layoutManager);
         mAddToFavorite = (Button) findViewById(R.id.add_to_favorite_tv);
         mContentResolver = MovieDetailsActivity.this.getContentResolver();
         Intent intent = getIntent();
@@ -243,8 +244,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private void createReviewsList(List<Review> reviewsList) {
         mReviewAdapter = new ReviewAdapter(mContext, reviewsList);
-        mReviewsListView.setAdapter(mReviewAdapter);
-        mReviewsListView.invalidate();
+        mReviewsRecyclerView.setAdapter(mReviewAdapter);
+        mReviewsRecyclerView.invalidate();
     }
 
     @Override
@@ -290,17 +291,16 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private boolean isFavoriteCheck() {
         // Retrieve movies records
-
         Uri moviesuri = MovieContract.URI_TABLE;
         Cursor cursor = managedQuery(moviesuri, null, null, null, MovieContract.Movie.ID);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int id = cursor.getInt(cursor.getColumnIndex(MovieContract.Movie.ID));
+        cursor.moveToFirst();
+        while (cursor != null && !cursor.isAfterLast()) {
+                //int id = cursor.getInt(cursor.getColumnIndex(MovieContract.Movie.ID));
                 String title = cursor.getString(cursor.getColumnIndex(MovieContract.Movie.TITLE));
                 if ( title.equals(mUserElectedMovie.getmTitle())) {
                     return true;
                 }
-            }
+                cursor.moveToNext();
         }
         return false;
     }

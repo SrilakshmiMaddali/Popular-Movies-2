@@ -146,15 +146,25 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="5dp"
         />
-
-            <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/movie_reviews"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                android:id="@+id/movie_review"
+                android:layout_below="@id/movie_synopsis_tv"
+                android:layout_above="@id/review_list"/>
+            <android.support.v7.widget.RecyclerView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/review_list"
                 android:layout_below="@id/movie_synopsis_tv"
                 android:layout_margin="15dp"
                 android:layout_marginTop="10dp">
-            </ListView>
+            </android.support.v7.widget.RecyclerView>
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

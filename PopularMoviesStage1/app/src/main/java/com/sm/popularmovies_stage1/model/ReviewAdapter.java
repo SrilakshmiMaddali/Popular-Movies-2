@@ -8,44 +8,54 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.support.v7.widget.RecyclerView;
 
 import com.sm.popularmovies_stage1.R;
 
 import java.util.List;
 
-public class ReviewAdapter extends ArrayAdapter<Review> {
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
     private Context mContext;
     private List<Review> mReviews;
     public ReviewAdapter(@NonNull Context context, @NonNull List<Review> objects) {
-        super(context, R.layout.review_item_layout, objects);
         mContext = context;
         mReviews = objects;
     }
 
-    public static class ViewHolder {
-        TextView author;
-        TextView content;
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // create a new view
+        LayoutInflater inflater = LayoutInflater.from(
+                parent.getContext());
+        View v =
+                inflater.inflate(R.layout.review_item_layout, parent, false);
+        // set the view's size, margins, paddings and layout parameters
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Review review = mReviews.get(position);
+        holder.author.setText(review.getAuthor());
+        holder.content.setText(review.getContent());
+    }
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(
-                    R.layout.review_item_layout, null);
-            holder = new ViewHolder();
+    @Override
+    public int getItemCount() {
+        return mReviews.size();
+    }
 
-            holder.author = (TextView) convertView
-                    .findViewById(R.id.author);
-            holder.content = (TextView) convertView
-                    .findViewById(R.id.content);
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        public TextView author;
+        public TextView content;
+        public View layout;
 
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        public ViewHolder(View itemView) {
+            super(itemView);
+            layout = itemView;
+            author = (TextView) itemView.findViewById(R.id.author);
+            content = (TextView) itemView.findViewById(R.id.content);
         }
-
-        return convertView;
     }
 }

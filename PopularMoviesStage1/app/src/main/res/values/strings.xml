@@ -12,4 +12,5 @@
     <string name="something_wrong">Something went wrong...Please try later!</string>
     <string name="addfavoritebtn">Add to Favorite</string>
     <string name="removefavoritebtn">Remove from Favorite</string>
+    <string name="movie_reviews">Movie Reviews:</string>
 </resources>

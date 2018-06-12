@@ -31,6 +31,9 @@ import com.sm.popularmovies_stage1.model.MoviedbService;
 import com.sm.popularmovies_stage1.model.Movies;
 import com.sm.popularmovies_stage1.model.PopularMoviesDto;
 import com.sm.popularmovies_stage1.model.RetrofitClientInstance;
+import com.sm.popularmovies_stage1.model.Review;
+import com.sm.popularmovies_stage1.model.ReviewAdapter;
+import com.sm.popularmovies_stage1.model.ReviewDataDto;
 import com.sm.popularmovies_stage1.model.TrailerAdapter;
 import com.sm.popularmovies_stage1.model.TrailerVideo;
 import com.sm.popularmovies_stage1.model.VideoDataDto;
@@ -50,10 +53,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView movieTitle;
     ImageView moviePosterImage;
     List<TrailerVideo> mTrailerVideoList;
+    List<Review> mReviewsList;
     TrailerAdapter mTrailerAdapter;
+    ReviewAdapter mReviewAdapter;
     Button mAddToFavorite;
     ListView mTrailerList;
-    ArrayList<String> reviewsList;
+    ListView mReviewsListView;
     Context mContext;
     Movies mUserElectedMovie;
     boolean isFavorite = false;
@@ -72,6 +77,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
         moviePosterImage = (ImageView) findViewById(R.id.movie_poster);
         movieTitle = (TextView) findViewById(R.id.title);
         mTrailerList = (ListView) findViewById(R.id.trailer_list);
+        mTrailerList.setNestedScrollingEnabled(true);
+        mReviewsListView = (ListView) findViewById(R.id.review_list);
+        mReviewsListView.setNestedScrollingEnabled(true);
         mAddToFavorite = (Button) findViewById(R.id.add_to_favorite_tv);
         mContentResolver = MovieDetailsActivity.this.getContentResolver();
         Intent intent = getIntent();
@@ -108,6 +116,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     }
                 });
 
+        getReviewsList(getReviewsDetails());
         getMovieList(getVideoTrailerUrl());
 
         setTitle(mUserElectedMovie.getmOriginalTitle());
@@ -199,9 +208,31 @@ public class MovieDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void getReviewsList(Call<ReviewDataDto> call) {
+        call.enqueue(new retrofit2.Callback<ReviewDataDto>() {
+            @Override
+            public void onResponse(Call<ReviewDataDto> call, Response<ReviewDataDto> response) {
+                if (response != null && response.body() != null) {
+                    mReviewsList = response.body().getResults();
+                    createReviewsList(mReviewsList);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewDataDto> call, Throwable t) {
+                Toast.makeText(MovieDetailsActivity.this, R.string.something_wrong, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private Call<VideoDataDto> getVideoTrailerUrl() {
         MoviedbService service = RetrofitClientInstance.getRetrofitInstance().create(MoviedbService.class);
         return service.getVideosList(mUserElectedMovie.getmId(),BuildConfig.API_KEY);
+    }
+
+    private Call<ReviewDataDto> getReviewsDetails() {
+        MoviedbService service = RetrofitClientInstance.getRetrofitInstance().create(MoviedbService.class);
+        return service.getReviewsList(mUserElectedMovie.getmId(),BuildConfig.API_KEY);
     }
 
     private void generateDataList(List<TrailerVideo> moviesList) {
@@ -209,6 +240,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mTrailerList.setAdapter(mTrailerAdapter);
         mTrailerList.invalidateViews();
     }
+
+    private void createReviewsList(List<Review> reviewsList) {
+        mReviewAdapter = new ReviewAdapter(mContext, reviewsList);
+        mReviewsListView.setAdapter(mReviewAdapter);
+        mReviewsListView.invalidate();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

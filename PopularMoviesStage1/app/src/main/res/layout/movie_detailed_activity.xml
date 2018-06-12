@@ -146,23 +146,23 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="5dp"
         />
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/trailer_list"
-        android:layout_below="@id/movie_synopsis_tv"
-        android:layout_margin="15dp"
-        android:layout_marginTop="10dp">
-    </ListView>
+
             <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/review_list"
-                android:layout_below="@id/trailer_list"
+                android:layout_below="@id/movie_synopsis_tv"
                 android:layout_margin="15dp"
                 android:layout_marginTop="10dp">
             </ListView>
-
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/trailer_list"
+        android:layout_below="@id/review_list"
+        android:layout_margin="15dp"
+        android:layout_marginTop="10dp">
+    </ListView>
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

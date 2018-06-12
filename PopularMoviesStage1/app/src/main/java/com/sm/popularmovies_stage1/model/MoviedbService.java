@@ -19,5 +19,5 @@ public interface MoviedbService {
     Call<VideoDataDto> getVideosList(@Path("taskId") String taskId, @Query("api_key") String apiKey);
 
     @GET("movie/{taskId}/reviews")
-    Call<PopularMoviesDto> getReviewsList(@Path("taskId") String taskId, @Query("api_key") String apiKey);
+    Call<ReviewDataDto> getReviewsList(@Path("taskId") String taskId, @Query("api_key") String apiKey);
 }

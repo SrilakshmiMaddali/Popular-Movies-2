@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PopularMovies-Stage1</string>
+    <string name="app_name">PopularMovies-Stage2</string>
     <string name="release_date">Movie Release date:</string>
     <string name="user_rating">User ratings:</string>
     <string name="add_to_favorite">Add as favorite:</string>
@@ -9,6 +9,7 @@
     <string name="original_title">Original Title:</string>
     <string name="popular_movies">Popular movies</string>
     <string name="top_movies">Top rated movies</string>
+    <string name="favorite_movies">Favorite movies</string>
     <string name="something_wrong">Something went wrong...Please try later!</string>
     <string name="addfavoritebtn">Add to Favorite</string>
     <string name="removefavoritebtn">Remove from Favorite</string>

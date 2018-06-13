@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.fv_movies:
                 createFavoriteList();
+                setTitle(R.string.favorite_movies);
                 break;
             default:
                 break;

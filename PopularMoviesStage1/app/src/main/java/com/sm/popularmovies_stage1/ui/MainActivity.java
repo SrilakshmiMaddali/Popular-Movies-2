@@ -175,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
                 }while(mCursor.moveToNext());
             }
         }
-        generateDataList(entries);
+        mMoviesList = entries;
+        generateDataList(mMoviesList);
     }
     private void generateDataList(List<Movies> moviesList) {
         mCustomAdapter = new CustomAdapter(mContext, moviesList);

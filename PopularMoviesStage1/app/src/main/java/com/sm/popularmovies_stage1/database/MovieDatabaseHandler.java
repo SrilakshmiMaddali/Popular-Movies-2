@@ -24,14 +24,42 @@ public class MovieDatabaseHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "movies.db";
     private static final int DATABASE_VERSION = 6;
     private ContentResolver contentResolver;
-    interface Tables{
-        String MOVIES = "movies";
+    public interface Tables{
+        String POPULAR_MOVIES = "popular_movies";
+        String TOPRATED_MOVIES = "toprated_movies";
+        String FAVORITE_MOVIES = "favorite_movies";
     }
     public MovieDatabaseHandler(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     public void onCreate(SQLiteDatabase database){
-        database.execSQL("CREATE TABLE " + Tables.MOVIES +" ("
+        database.execSQL("CREATE TABLE " + Tables.FAVORITE_MOVIES +" ("
+                +MovieContract.MovieColumns.ID+" INTEGER PRIMARY KEY,"
+                +MovieContract.MovieColumns.VIDEO+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.VOTE_AVERAGE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.TITLE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.POPULARITY+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.POSTER_PATH+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.ORIGINAL_LANGUAGE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.ORIGINAL_TITLE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.BACKDROP_PATH+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.OVERVIEW+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.VOTE_COUNT+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.RELEASE_DATE+" TEXT NOT NULL)");
+        database.execSQL("CREATE TABLE " + Tables.POPULAR_MOVIES +" ("
+                +MovieContract.MovieColumns.ID+" INTEGER PRIMARY KEY,"
+                +MovieContract.MovieColumns.VIDEO+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.VOTE_AVERAGE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.TITLE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.POPULARITY+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.POSTER_PATH+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.ORIGINAL_LANGUAGE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.ORIGINAL_TITLE+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.BACKDROP_PATH+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.OVERVIEW+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.VOTE_COUNT+" TEXT NOT NULL,"
+                +MovieContract.MovieColumns.RELEASE_DATE+" TEXT NOT NULL)");
+        database.execSQL("CREATE TABLE " + Tables.TOPRATED_MOVIES +" ("
                 +MovieContract.MovieColumns.ID+" INTEGER PRIMARY KEY,"
                 +MovieContract.MovieColumns.VIDEO+" TEXT NOT NULL,"
                 +MovieContract.MovieColumns.VOTE_AVERAGE+" TEXT NOT NULL,"

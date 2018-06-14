@@ -6,8 +6,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -34,7 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     GridView gridview;
     Context mContext;
@@ -46,13 +52,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     List<Movies> mMoviesList;
     ContentResolver mContentResolver;
+    Uri CONTACT_URI = MovieContract.URI_TABLE;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridview = findViewById(R.id.gridview);
         mContext = this;
-        mContentResolver = MainActivity.this.getContentResolver();
+        getSupportLoaderManager().initLoader(1, null, this);
         getMovieList(getPopularMoviesCall());
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        generateDataList();
     }
 
     @Override
@@ -104,15 +112,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private Call<PopularMoviesDto> getPopularMoviesCall() {
-        MoviedbService service = RetrofitClientInstance.getRetrofitInstance().create(MoviedbService.class);
-        return service.getPopularMovies(API_KEY);
-    }
 
-    private Call<PopularMoviesDto> getTopRatedMovieCall() {
-        MoviedbService service = RetrofitClientInstance.getRetrofitInstance().create(MoviedbService.class);
-        return service.getTopRatedMovies(API_KEY);
-    }
 
     private void getMovieList(Call<PopularMoviesDto> call) {
 
@@ -137,51 +137,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void createFavoriteList() {
-        String[] projection = {MovieContract.Movie.ID,
-                MovieContract.MovieColumns.VIDEO,
-                MovieContract.MovieColumns.VOTE_AVERAGE,
-                MovieContract.MovieColumns.TITLE,
-                MovieContract.MovieColumns.POPULARITY,
-                MovieContract.MovieColumns.POSTER_PATH,
-                MovieContract.MovieColumns.ORIGINAL_LANGUAGE,
-                MovieContract.MovieColumns.ORIGINAL_TITLE,
-                MovieContract.MovieColumns.BACKDROP_PATH,
-                MovieContract.MovieColumns.OVERVIEW,
-                MovieContract.MovieColumns.VOTE_COUNT,
-                MovieContract.MovieColumns.RELEASE_DATE
-        };
 
-        List<Movies> entries = new ArrayList<Movies>();
-
-        Cursor mCursor = mContentResolver.query(MovieContract.URI_TABLE, projection, null, null, null);
-
-        if(mCursor != null){
-            if(mCursor.moveToFirst()){
-                do{
-                    int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.Movie.ID));
-                    String video = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VIDEO));
-                    String vote_average = mCursor.getString(mCursor.getColumnIndex( MovieContract.MovieColumns.VOTE_AVERAGE));
-                    String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.TITLE));
-                    String popularity = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POPULARITY));
-                    String poster_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POSTER_PATH));
-                    String origin_language = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_LANGUAGE));
-                    String origin_title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_TITLE));
-                    String backdrop_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.BACKDROP_PATH));
-                    String overview = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.OVERVIEW));
-                    String vote_count = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VOTE_COUNT));
-                    String release_date = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.RELEASE_DATE));
-                    Movies movieEntry = new Movies(Integer.parseInt(vote_count),Integer.toString(id),video,vote_average,title,popularity, poster_path, origin_language, origin_title, backdrop_path, false, overview, release_date);
-                    entries.add(movieEntry);
-                }while(mCursor.moveToNext());
-            }
-        }
-        mMoviesList = entries;
-        generateDataList(mMoviesList);
-    }
     private void generateDataList(List<Movies> moviesList) {
         mCustomAdapter = new CustomAdapter(mContext, moviesList);
         gridview.setAdapter(mCustomAdapter);
         gridview.invalidateViews();
+    }
+
+    @NonNull
+    @Override
+    public Loader onCreateLoader(int id, @Nullable Bundle args) {
+        //(@NonNull Context context, @NonNull Uri uri, @Nullable String[] projection,
+          //      @Nullable String selection, @Nullable String[] selectionArgs,
+            //    @Nullable String sortOrder)
+        CursorLoader cursorLoader = new CursorLoader(MainActivity.this, CONTACT_URI, null, null, null,MovieContract.Movie.ID);
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader loader, Cursor cursor) {
+        cursor.moveToFirst();
+        adapter = new CustomContactAdapter(this, cursor);
+        lstContact.setAdapter(adapter);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader loader) {
+
     }
 }

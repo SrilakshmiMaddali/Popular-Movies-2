@@ -10,6 +10,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -21,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     GridView gridview;
     Context mContext;
     CustomAdapter mCustomAdapter;
+    SimpleCursorAdapter mCursorAdapter;
     MenuItem top;
     MenuItem pop;
     MenuItem fav;
@@ -144,6 +147,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         gridview.invalidateViews();
     }
 
+    private void initializeContentLoader() {
+        // array of database column names
+        String[] columns = new String[] {
+                MovieContract.Movie.POSTER_PATH };
+        // array of views to display database values
+        int[] viewIds = new int[] {
+                R.id.poster};
+        // CursorAdapter to load data from the Cursor into the ListView
+        mCursorAdapter = new SimpleCursorAdapter(this,
+                R.layout.grid_view_item, null, columns, viewIds, 0);
+        gridview.setAdapter(mCursorAdapter);
+    }
     @NonNull
     @Override
     public Loader onCreateLoader(int id, @Nullable Bundle args) {
@@ -156,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(@NonNull Loader loader, Cursor cursor) {
+
         cursor.moveToFirst();
         adapter = new CustomContactAdapter(this, cursor);
         lstContact.setAdapter(adapter);

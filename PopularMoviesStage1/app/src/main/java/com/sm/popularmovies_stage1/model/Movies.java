@@ -35,6 +35,11 @@ public class Movies implements Parcelable{
     @SerializedName("release_date")
     private String mReleaseDate;
 
+    private boolean isPopular = false;
+    private boolean isToprated = false;
+    private boolean isFavorite = false;
+
+
     public Movies(int votecount,String id,String video,String voteaverage,String title,String popularity,String posterpath,String originallanguage,String originaltitle,
                   String backdroppath,boolean adult,String overview,String releasedate){
         this.mVoteCount=votecount;

@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 public class MovieContract {
 
     public interface MovieColumns {
-        String ID="movies_id";
+        String ID="_id";
         String VOTE_COUNT ="movies_vote_count";
         String VIDEO="movies_video";
         String VOTE_AVERAGE="movies_vote_average";
@@ -18,6 +18,9 @@ public class MovieContract {
         String BACKDROP_PATH="movies_backdrop_path";
         String OVERVIEW="movies_overview";
         String RELEASE_DATE="movies_release_date";
+        //String ISPOP = "is_popular";
+        //String ISFAV = "is_favorite";
+        //String ISTOP = "is_toprate";
     }
 
     // Used to access the content
@@ -30,7 +33,7 @@ public class MovieContract {
 
     public static final String[] TOP_LEVEL_PATHS = {PATH_MOVIES};
 
-    public static class Movie implements MovieColumns,BaseColumns {
+    public static class Movie implements MovieColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendEncodedPath(PATH_MOVIES).build();
         // Accessing content directory and item
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd."+CONTENT_AUTHORITY+".movies";

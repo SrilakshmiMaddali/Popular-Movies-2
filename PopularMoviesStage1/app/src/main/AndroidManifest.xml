@@ -24,6 +24,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sm.popularmovies_stage1.ui.MainActivity" />
         </activity>
+        <service android:name="com.sm.popularmovies_stage1.model.FetchMoviesService"></service>
         <provider android:name=".database.MovieContentProvider"
             android:authorities="com.sm.popularmovies_stage1.database.provider"/>
     </application>

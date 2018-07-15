@@ -18,9 +18,9 @@ public class MovieContract {
         String BACKDROP_PATH="movies_backdrop_path";
         String OVERVIEW="movies_overview";
         String RELEASE_DATE="movies_release_date";
-        //String ISPOP = "is_popular";
-        //String ISFAV = "is_favorite";
-        //String ISTOP = "is_toprate";
+        String ISPOP = "is_popular";
+        String ISFAV = "is_favorite";
+        String ISTOP = "is_toprate";
     }
 
     // Used to access the content

@@ -6,23 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MovieDatabaseHandler extends SQLiteOpenHelper {
-    //
-    // int VOTE_COUNT = "";
-    //        String ID;
-    //        String VIDEO;
-    //        String VOTE_AVERAGE;
-    //        String TITLE;
-    //        String POPULARITY;
-    //        String POSTER_PATH;
-    //        String ORIGINAL_LAMGUAGE;
-    //        String ORIGINAL_TITLE;
-    //        String BACKDROP_PATH;
-    //        boolean ADULT;
-    //        String OVERVIEW;
-    //        String RELEASE_DATE;
     private static final String DATABASE_NAME = "movies.db";
-    private static final int DATABASE_VERSION = 8;
-    private ContentResolver contentResolver;
+    private static final int DATABASE_VERSION = 9;
     public interface Tables{
         String MOVIES = "movies";
     }
@@ -42,10 +27,10 @@ public class MovieDatabaseHandler extends SQLiteOpenHelper {
                 +MovieContract.MovieColumns.BACKDROP_PATH+" TEXT,"
                 +MovieContract.MovieColumns.OVERVIEW+" TEXT,"
                 +MovieContract.MovieColumns.VOTE_COUNT+" TEXT,"
-                +MovieContract.MovieColumns.RELEASE_DATE+" TEXT)");
-                /*+MovieContract.MovieColumns.ISPOP+" TEXT,"
+                +MovieContract.MovieColumns.RELEASE_DATE+" TEXT,"
+                +MovieContract.MovieColumns.ISPOP+" TEXT,"
                 +MovieContract.MovieColumns.ISTOP+" TEXT,"
-                +MovieContract.MovieColumns.ISFAV+" TEXT)");*/
+                +MovieContract.MovieColumns.ISFAV+" TEXT)");
     }
 
     @Override

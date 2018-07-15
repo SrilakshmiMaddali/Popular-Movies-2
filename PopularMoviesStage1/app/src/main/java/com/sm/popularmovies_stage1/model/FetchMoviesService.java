@@ -26,8 +26,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.sm.popularmovies_stage1.model.FetchMoviesService.enum_Movie_Type.DEFAULT;
-
 public class FetchMoviesService extends IntentService {
     public final static String FETCH_POPULAR_MOVIES = "getPopularMovies";
     public final static String FETCH_TOPRATED_MOVIES = "getTopratedMovies";
@@ -35,7 +33,6 @@ public class FetchMoviesService extends IntentService {
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
     public final static String FETCH_FAV_MOVIES = "getFavMovies";
-    public final static String DEFAULT_MODE ="getAll";
     private static final String API_KEY = BuildConfig.API_KEY;
     private static final String TAG = "FetchMoviesService";
     ContentResolver mContentResolver;
@@ -43,8 +40,7 @@ public class FetchMoviesService extends IntentService {
     public enum enum_Movie_Type {
         POPULAR_MOVIE_TYPE,
         TOPRATED_MOVIE_TYPE,
-        FAVORITE_MOVIE_TYPE,
-        DEFAULT;
+        FAVORITE_MOVIE_TYPE;
     }
 
     public FetchMoviesService() {
@@ -64,10 +60,7 @@ public class FetchMoviesService extends IntentService {
         } else if (action.equals(FETCH_TOPRATED_MOVIES)) {
             getMovieList(getTopRatedMovieCall(), enum_Movie_Type.TOPRATED_MOVIE_TYPE);
         } else if (action.equals(FETCH_FAV_MOVIES)) {
-            mReceiver.send(STATUS_FINISHED, Bundle.EMPTY);
-        } else if (action.equals(DEFAULT_MODE)) {
-            getMovieList(getPopularMoviesCall(), enum_Movie_Type.POPULAR_MOVIE_TYPE);
-            getMovieList(getTopRatedMovieCall(), enum_Movie_Type.TOPRATED_MOVIE_TYPE);
+            createFavoriteList();
         }
         mContentResolver = getContentResolver();
     }
@@ -91,10 +84,9 @@ public class FetchMoviesService extends IntentService {
                 List<Movies> moviesList;
                 if (response != null && response.body() != null) {
                     moviesList = response.body().getmResults();
-                    if (moviesList.size() > 0) {
-                        insertToDatabase(moviesList, type);
-                        mReceiver.send(STATUS_FINISHED, Bundle.EMPTY);
-                    }
+
+                    insertToDatabase(moviesList,type);
+                    mReceiver.send(STATUS_FINISHED, Bundle.EMPTY);
                 } else {
                     Log.d(TAG, "null Popular movies response.");
                     Toast.makeText(FetchMoviesService.this, R.string.something_wrong, Toast.LENGTH_SHORT).show();
@@ -127,47 +119,68 @@ public class FetchMoviesService extends IntentService {
             values.put(MovieContract.Movie.ORIGINAL_LANGUAGE, movie.getmOriginalLanguage());
             values.put(MovieContract.Movie.BACKDROP_PATH, movie.getmBackdropPath());
             values.put(MovieContract.Movie.RELEASE_DATE, movie.getmReleaseDate());
-            switch (type) {
+            /*switch (type) {
                 case POPULAR_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISPOP, "1");
-                    Cursor popCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null, null,
-                                    null);
-                    if(popCursor != null) {
-                          mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
-                    } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                    }
                     break;
                 case TOPRATED_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISTOP, "1");
-                    Cursor topCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null,null,
-                                    null);
-                    if(topCursor != null) {
-                        mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
-                    } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                    }
                     break;
                 case FAVORITE_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISFAV, "1");
-                    Cursor favCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null,null,
-                                    null);
-                    if(favCursor != null) {
-                        if (favCursor.moveToFirst()) {
-                            do {
-                                String isFav = favCursor.getString(favCursor.getColumnIndex(MovieContract.Movie.ISFAV));
-                                if (!isFav.equals("1")) {
-                                    Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                                }
-                            }while (favCursor.moveToNext());
-                        } else {
-                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                        }
-                    } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                    }
                     break;
+            }*/
+
+            //CursorLoader cursorLoader = new CursorLoader(MainActivity.this, MovieContract.URI_TABLE,
+            // new String[]{MovieContract.Movie.POSTER_PATH},MovieContract.Movie.ISPOP+"=?", new String[] {"1"},MovieContract.Movie.ID);
+
+            Cursor cursor = mContentResolver.query(MovieContract.URI_TABLE,new String[]{MovieContract.Movie.ID},MovieContract.Movie.ID+"=?", new String[]{movie.getmId()},MovieContract.Movie.ID );
+            if (cursor == null) {
+                Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
             }
         }
+    }
+
+    public void createFavoriteList() {
+        String[] projection = {MovieContract.Movie.ID,
+                MovieContract.MovieColumns.VIDEO,
+                MovieContract.MovieColumns.VOTE_AVERAGE,
+                MovieContract.MovieColumns.TITLE,
+                MovieContract.MovieColumns.POPULARITY,
+                MovieContract.MovieColumns.POSTER_PATH,
+                MovieContract.MovieColumns.ORIGINAL_LANGUAGE,
+                MovieContract.MovieColumns.ORIGINAL_TITLE,
+                MovieContract.MovieColumns.BACKDROP_PATH,
+                MovieContract.MovieColumns.OVERVIEW,
+                MovieContract.MovieColumns.VOTE_COUNT,
+                MovieContract.MovieColumns.RELEASE_DATE
+        };
+
+        List<Movies> entries = new ArrayList<Movies>();
+
+        Cursor mCursor = mContentResolver.query(MovieContract.URI_TABLE, projection, null, null, null);
+
+        if(mCursor != null){
+            if(mCursor.moveToFirst()){
+                do{
+                    int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.Movie.ID));
+                    String video = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VIDEO));
+                    String vote_average = mCursor.getString(mCursor.getColumnIndex( MovieContract.MovieColumns.VOTE_AVERAGE));
+                    String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.TITLE));
+                    String popularity = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POPULARITY));
+                    String poster_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.POSTER_PATH));
+                    String origin_language = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_LANGUAGE));
+                    String origin_title = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.ORIGINAL_TITLE));
+                    String backdrop_path = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.BACKDROP_PATH));
+                    String overview = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.OVERVIEW));
+                    String vote_count = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.VOTE_COUNT));
+                    String release_date = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieColumns.RELEASE_DATE));
+                    Movies movieEntry = new Movies(Integer.parseInt(vote_count),Integer.toString(id),video,vote_average,title,popularity, poster_path, origin_language, origin_title, backdrop_path, false, overview, release_date);
+                    entries.add(movieEntry);
+                }while(mCursor.moveToNext());
+            }
+        }
+        //mMoviesList = entries;
+        //generateDataList(mMoviesList);
     }
 }

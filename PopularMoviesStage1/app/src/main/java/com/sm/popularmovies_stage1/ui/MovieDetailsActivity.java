@@ -1,6 +1,5 @@
 package com.sm.popularmovies_stage1.ui;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -150,6 +149,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void populateUI(@NonNull Movies movie) {
+        // Load views, from model object
+       // mProgressBar = (ProgressBar) findViewById(R.id.loadingprogress);
+        //mProgressBar.setVisibility(View.VISIBLE);
+
         TextView originalTitleTextView = (TextView) findViewById(R.id.original_title_tv);
         String originalTitle = movie.getmOriginalTitle();
         if (!originalTitle.isEmpty()) {
@@ -188,6 +191,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         call.enqueue(new retrofit2.Callback<VideoDataDto>() {
             @Override
             public void onResponse(@NonNull Call<VideoDataDto> call, @NonNull Response<VideoDataDto> response) {
+                //progressDoalog.dismiss();
                 if (response != null && response.body() != null) {
                     mTrailerVideoList = response.body().getResults();
                     generateDataList(mTrailerVideoList);
@@ -199,6 +203,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<VideoDataDto> call, @NonNull Throwable t) {
+                //progressDialog.dismiss();
                 Toast.makeText(MovieDetailsActivity.this, R.string.something_wrong, Toast.LENGTH_SHORT).show();
             }
         });
@@ -249,17 +254,28 @@ public class MovieDetailsActivity extends AppCompatActivity {
         // relase all resources.
         moviePosterImage = null;
         movieTitle = null;
+        //mProgressBar = null;
     }
 
     View.OnClickListener mAddToFavoriteListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             ContentValues values = new ContentValues();
-            values.put(MovieContract.Movie.ISFAV, "1");
-            mContentResolver.update(MovieContract.Movie.buildMovieUri(mUserElectedMovie.getmId()), values, null, null);
-            Intent returnIntent = new Intent();
-            setResult(Activity.RESULT_OK,returnIntent);
+            values.put(MovieContract.Movie.ID, mUserElectedMovie.getmId());
+            values.put(MovieContract.Movie.ORIGINAL_TITLE, mUserElectedMovie.getmOriginalTitle());
+            values.put(MovieContract.Movie.POPULARITY, mUserElectedMovie.getmPopularity());
+            values.put(MovieContract.Movie.OVERVIEW, mUserElectedMovie.getmOverview());
+            values.put(MovieContract.Movie.VIDEO, mUserElectedMovie.getmVideo());
+            values.put(MovieContract.Movie.VOTE_AVERAGE, mUserElectedMovie.getmVoteAverage());
+            values.put(MovieContract.Movie.VOTE_COUNT, mUserElectedMovie.getmVoteCount());
+            values.put(MovieContract.Movie.TITLE, mUserElectedMovie.getmTitle());
+            values.put(MovieContract.Movie.POSTER_PATH, mUserElectedMovie.getmPosterPath());
+            values.put(MovieContract.Movie.ORIGINAL_LANGUAGE, mUserElectedMovie.getmOriginalLanguage());
+            values.put(MovieContract.Movie.BACKDROP_PATH, mUserElectedMovie.getmBackdropPath());
+            values.put(MovieContract.Movie.RELEASE_DATE, mUserElectedMovie.getmReleaseDate());
+            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
             updateFavoriteUI();
+            Log.d(TAG, "record id returned is " + returned.toString());
         }
     };
 
@@ -267,42 +283,24 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            ContentValues values = new ContentValues();
-            values.putNull(MovieContract.Movie.ISFAV);
-            mContentResolver.update(MovieContract.Movie.buildMovieUri(mUserElectedMovie.getmId()), values, null, null);
-            Intent returnIntent = new Intent();
-            setResult(Activity.RESULT_OK,returnIntent);
+            Uri uri = MovieContract.Movie.buildMovieUri(mUserElectedMovie.getmId());
+            mContentResolver.delete(uri, null, null);
             updateFavoriteUI();
         }
     };
 
     private boolean isFavoriteCheck() {
         // Retrieve movies records
-        String[] projection = {MovieContract.Movie.ID,
-                        MovieContract.MovieColumns.VIDEO,
-                        MovieContract.MovieColumns.VOTE_AVERAGE,
-                        MovieContract.MovieColumns.TITLE,
-                        MovieContract.MovieColumns.POPULARITY,
-                        MovieContract.MovieColumns.POSTER_PATH,
-                        MovieContract.MovieColumns.ORIGINAL_LANGUAGE,
-                        MovieContract.MovieColumns.ORIGINAL_TITLE,
-                        MovieContract.MovieColumns.BACKDROP_PATH,
-                        MovieContract.MovieColumns.OVERVIEW,
-                        MovieContract.MovieColumns.VOTE_COUNT,
-                        MovieContract.MovieColumns.RELEASE_DATE,
-                        MovieContract.MovieColumns.ISPOP,
-                        MovieContract.MovieColumns.ISTOP,
-                        MovieContract.MovieColumns.ISFAV
-        };
         Uri moviesuri = MovieContract.URI_TABLE;
-        Cursor favCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(mUserElectedMovie.getmId()), projection, null,null,
-                        null);
-        if (favCursor != null && favCursor.moveToFirst()) {
-            int i = favCursor.getColumnIndex(MovieContract.Movie.ISFAV);
-                String isFav = favCursor.getString(i);
-                if ( isFav != null && isFav.equals("1")) {
+        Cursor cursor = managedQuery(moviesuri, null, null, null, MovieContract.Movie.ID);
+        cursor.moveToFirst();
+        while (cursor != null && !cursor.isAfterLast()) {
+                //int id = cursor.getInt(cursor.getColumnIndex(MovieContract.Movie.ID));
+                String title = cursor.getString(cursor.getColumnIndex(MovieContract.Movie.TITLE));
+                if ( title.equals(mUserElectedMovie.getmTitle())) {
                     return true;
                 }
+                cursor.moveToNext();
         }
         return false;
     }

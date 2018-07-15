@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.jakewharton:butterknife:8.5.1'
-    implementation "com.android.support:recyclerview-v7:25.3.1"
+    compile "com.android.support:recyclerview-v7:25.3.1"
     // Room components
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"

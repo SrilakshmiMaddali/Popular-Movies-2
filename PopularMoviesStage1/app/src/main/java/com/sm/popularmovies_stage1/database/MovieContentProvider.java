@@ -23,6 +23,7 @@ public class MovieContentProvider extends ContentProvider {
      static {
         // Initalize
          sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
          sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,"movies", MOVIE);
          sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,"movies/#", MOVIE_ID);
 

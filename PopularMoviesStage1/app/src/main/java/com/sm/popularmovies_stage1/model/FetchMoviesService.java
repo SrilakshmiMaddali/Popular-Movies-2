@@ -131,40 +131,45 @@ public class FetchMoviesService extends IntentService {
                 case POPULAR_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISPOP, "1");
                     Cursor popCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null, null,
-                                    null);
-                    if(popCursor != null) {
-                          mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
-                    } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                            null);
+                    if (popCursor != null && popCursor.moveToFirst()) {
+                        if (!((popCursor.getString(popCursor.getColumnIndex(MovieContract.Movie.ID)).equalsIgnoreCase(movie.getmId())))) {
+                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                        } else {
+                            mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
+                        }
                     }
                     break;
                 case TOPRATED_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISTOP, "1");
                     Cursor topCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null,null,
-                                    null);
-                    if(topCursor != null) {
-                        mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
-                    } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                            null);
+                    if (topCursor != null  && topCursor.moveToFirst()) {
+                        if (!((topCursor.getString(topCursor.getColumnIndex(MovieContract.Movie.ID)).equalsIgnoreCase(movie.getmId())))) {
+                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                        } else {
+                            mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
+                        }
                     }
+
                     break;
                 case FAVORITE_MOVIE_TYPE:
                     values.put(MovieContract.Movie.ISFAV, "1");
                     Cursor favCursor = mContentResolver.query(MovieContract.Movie.buildMovieUri(movie.getmId()), null, null,null,
-                                    null);
+                            null);
                     if(favCursor != null) {
                         if (favCursor.moveToFirst()) {
                             do {
                                 String isFav = favCursor.getString(favCursor.getColumnIndex(MovieContract.Movie.ISFAV));
                                 if (!isFav.equals("1")) {
-                                    Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                                    mContentResolver.insert(MovieContract.URI_TABLE, values);
                                 }
                             }while (favCursor.moveToNext());
                         } else {
-                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                            mContentResolver.insert(MovieContract.URI_TABLE, values);
                         }
                     } else {
-                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
+                        mContentResolver.insert(MovieContract.URI_TABLE, values);
                     }
                     break;
             }

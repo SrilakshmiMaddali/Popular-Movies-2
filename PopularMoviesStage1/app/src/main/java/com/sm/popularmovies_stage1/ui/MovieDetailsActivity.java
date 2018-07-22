@@ -111,10 +111,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onError() {
                         // On error , while loading sandwich image, display error message.
-                        moviePosterImage.setVisibility(View.INVISIBLE);
+                        if (moviePosterImage != null) {
+                            moviePosterImage.setVisibility(View.INVISIBLE);
+                        }
                         //mProgressBar.setVisibility(View.GONE);
-                        movieTitle.setText(getString(R.string.detail_image_error_message));
-                        movieTitle.setVisibility(View.VISIBLE);
+                        if (movieTitle != null) {
+                            movieTitle.setText(getString(R.string.detail_image_error_message));
+                            movieTitle.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
 

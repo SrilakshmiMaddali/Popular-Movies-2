@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onResume(){
         super.onResume();
+        getSupportLoaderManager().initLoader(1, null, MainActivity.this);
     }
 
     @Override

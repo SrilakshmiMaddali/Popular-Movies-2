@@ -134,10 +134,10 @@ public class FetchMoviesService extends IntentService {
                             null);
                     if (popCursor != null && popCursor.moveToFirst()) {
                         if (!((popCursor.getString(popCursor.getColumnIndex(MovieContract.Movie.ID)).equalsIgnoreCase(movie.getmId())))) {
-                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                        } else {
                             mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
                         }
+                    } else {
+                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
                     }
                     break;
                 case TOPRATED_MOVIE_TYPE:
@@ -146,10 +146,10 @@ public class FetchMoviesService extends IntentService {
                             null);
                     if (topCursor != null  && topCursor.moveToFirst()) {
                         if (!((topCursor.getString(topCursor.getColumnIndex(MovieContract.Movie.ID)).equalsIgnoreCase(movie.getmId())))) {
-                            Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
-                        } else {
                             mContentResolver.update(MovieContract.URI_TABLE, values, null, null);
                         }
+                    } else {
+                        Uri returned = mContentResolver.insert(MovieContract.URI_TABLE, values);
                     }
 
                     break;

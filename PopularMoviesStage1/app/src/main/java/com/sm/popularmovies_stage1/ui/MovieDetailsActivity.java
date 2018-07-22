@@ -154,6 +154,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void populateUI(@NonNull Movies movie) {
+        movieTitle.setText(movie.getmTitle());
         TextView originalTitleTextView = (TextView) findViewById(R.id.original_title_tv);
         String originalTitle = movie.getmOriginalTitle();
         if (!originalTitle.isEmpty()) {

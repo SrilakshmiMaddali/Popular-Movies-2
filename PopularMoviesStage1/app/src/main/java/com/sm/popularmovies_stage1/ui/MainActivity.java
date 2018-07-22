@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.provider.BaseColumns;
 import android.provider.ContactsContract;
@@ -60,11 +61,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ContentResolver mContentResolver;
     DataDownloadResultReceiver mReceiver;
     SharedPreferences sharedpreferences;
+    Parcelable mListState;
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String POPULAR_PREF_VALUE = "popular";
     public static final String TOPRATED_PREF_VALUE= "toprated";
     public static final String FAV_PREF_VALUE = "favorite";
     public static final String USER_PREFERENCE_KEY = "userpreference";
+    public static final String LIST_STATE_KEY = "listState";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,19 +116,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onConfigurationChanged(Configuration configuration) {
-        super.onConfigurationChanged(configuration);
-        getSupportLoaderManager().restartLoader(1, null, MainActivity.this);
-    }
-
-    @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
+        // Save list state
+        mListState = gridview.onSaveInstanceState();
+        outState.putParcelable(LIST_STATE_KEY, mListState);
     }
 
     @Override
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
-
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState != null) {
+            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+        }
     }
 
     @Override
@@ -213,6 +216,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mMovieListAdapter.swapCursor(cursor);
         }
         gridview.setAdapter(mMovieListAdapter);
+        if (mListState != null) {
+            gridview.onRestoreInstanceState(mListState);
+        }
     }
 
     @Override
